@@ -1,7 +1,7 @@
 'use client';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { BACKGROUND_COLOR } from '@/lib/constant';
-import useCanvasStore from '@/lib/stores/useCanvasStore';
+import useCanvasStore from '@/stores/useCanvasStore';
 import { useEffect, useRef } from 'react';
 
 const CANVAS_WIDTH = window.innerWidth;

@@ -1,7 +1,7 @@
 'use client';
 
+import useCanvasStore from '@/stores/useCanvasStore';
 import { useEffect } from 'react';
-import useCanvasStore from '@/lib/stores/useCanvasStore';
 
 const MIN_BRUSH_SIZE = 1;
 const MAX_BRUSH_SIZE = 30;

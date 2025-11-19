@@ -1,6 +1,6 @@
 'use client';
+import { BACKGROUND_COLOR } from '@/lib/constant';
 import { create } from 'zustand';
-import { BACKGROUND_COLOR } from '../constant';
 
 interface CanvasState {
 	canvasRef: React.RefObject<HTMLCanvasElement | null> | null;

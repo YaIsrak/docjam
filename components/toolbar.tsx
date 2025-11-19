@@ -1,6 +1,6 @@
 'use client';
 
-import useCanvasStore from '@/lib/stores/useCanvasStore';
+import useCanvasStore from '@/stores/useCanvasStore';
 import {
 	Eraser,
 	LineSquiggle,
