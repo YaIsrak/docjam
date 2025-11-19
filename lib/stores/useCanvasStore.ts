@@ -27,137 +27,147 @@ interface CanvasState {
 	changeWidth: (width: number) => void;
 	undoDrawing: () => void;
 	clearDrawing: () => void;
-	redrawCanvas: () => void;
+	redrawCanvas: (inProgressPath?: [number, number][]) => void;
 }
 
-const useCanvasStore = create<CanvasState>((set, get) => ({
-	canvasRef: null,
-	contextRef: null,
-	drawing: false,
-	activeTool: 'pencil',
-	currentColor: 'red',
-	brushSize: 5,
-	currentStyle: {
-		color: 'black',
-		size: 3,
-	},
-	drawingActions: [],
-	currentPath: [],
-
-	setCanvasRef: (ref) => set({ canvasRef: ref }),
-	setContextRef: (ref) => set({ contextRef: ref }),
-	setActiveTool: (tool) => set({ activeTool: tool }),
-
-	redrawCanvas: () => {
-		const { contextRef, canvasRef, drawingActions } = get();
-		if (!contextRef?.current || !canvasRef?.current) return;
-
-		const ctx = contextRef.current;
-		const canvas = canvasRef.current;
-
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		ctx.fillStyle = BACKGROUND_COLOR;
-		ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-		const drawPath = (action: DrawingAction) => {
-			ctx.beginPath();
-			ctx.strokeStyle = action.style.color;
-			ctx.lineWidth = action.style.size;
-			if (action.path.length > 0) {
-				ctx.moveTo(action.path[0][0], action.path[0][1]);
-				for (let i = 1; i < action.path.length; i++) {
-					ctx.lineTo(action.path[i][0], action.path[i][1]);
-				}
-				ctx.stroke();
-			}
-		};
-
-		drawingActions.forEach(drawPath);
-	},
-
-	startDrawing: (e) => {
-		const { contextRef, canvasRef, currentStyle, activeTool } = get();
-		if (!contextRef?.current || !canvasRef?.current) return;
-
-		const ctx = contextRef.current;
-		const canvas = canvasRef.current;
-		const rect = canvas.getBoundingClientRect();
-		const x = e.clientX - rect.left;
-		const y = e.clientY - rect.top;
-
+const useCanvasStore = create<CanvasState>((set, get) => {
+	const drawPath = (ctx: CanvasRenderingContext2D, action: DrawingAction) => {
 		ctx.beginPath();
-		ctx.moveTo(x, y);
-		ctx.strokeStyle =
-			activeTool === 'eraser' ? BACKGROUND_COLOR : currentStyle.color;
-		ctx.lineWidth = currentStyle.size;
+		ctx.strokeStyle = action.style.color;
+		ctx.lineWidth = action.style.size;
+		if (action.path.length > 0) {
+			ctx.moveTo(action.path[0][0], action.path[0][1]);
+			for (let i = 1; i < action.path.length; i++) {
+				ctx.lineTo(action.path[i][0], action.path[i][1]);
+			}
+			ctx.stroke();
+		}
+	};
 
-		set({ drawing: true, currentPath: [[x, y]] });
-	},
+	return {
+		canvasRef: null,
+		contextRef: null,
+		drawing: false,
+		activeTool: 'pencil',
+		currentColor: 'red',
+		brushSize: 5,
+		currentStyle: {
+			color: 'black',
+			size: 3,
+		},
+		drawingActions: [],
+		currentPath: [],
 
-	draw: (e) => {
-		const { drawing, contextRef, canvasRef, currentPath } = get();
-		if (!drawing || !contextRef?.current || !canvasRef?.current) return;
+		setCanvasRef: (ref) => set({ canvasRef: ref }),
+		setContextRef: (ref) => set({ contextRef: ref }),
+		setActiveTool: (tool) => set({ activeTool: tool }),
 
-		const ctx = contextRef.current;
-		const canvas = canvasRef.current;
-		const rect = canvas.getBoundingClientRect();
-		const x = e.clientX - rect.left;
-		const y = e.clientY - rect.top;
+		redrawCanvas: (inProgressPath?: [number, number][]) => {
+			const {
+				contextRef,
+				canvasRef,
+				drawingActions,
+				currentStyle,
+				activeTool,
+			} = get();
+			if (!contextRef?.current || !canvasRef?.current) return;
 
-		ctx.lineTo(x, y);
-		ctx.stroke();
+			const ctx = contextRef.current;
+			const canvas = canvasRef.current;
 
-		set({ currentPath: [...currentPath, [x, y]] });
-	},
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.fillStyle = BACKGROUND_COLOR;
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-	endDrawing: () => {
-		const { drawing, contextRef, currentPath, currentStyle, activeTool } =
-			get();
-		if (!drawing || !contextRef?.current) return;
+			drawingActions.forEach((action) => drawPath(ctx, action));
 
-		contextRef.current.closePath();
-		if (currentPath.length > 0) {
-			const styleForAction =
-				activeTool === 'eraser'
-					? { ...currentStyle, color: BACKGROUND_COLOR }
-					: currentStyle;
+			if (inProgressPath) {
+				const styleForCurrentPath =
+					activeTool === 'eraser'
+						? { ...currentStyle, color: BACKGROUND_COLOR }
+						: currentStyle;
+				drawPath(ctx, { path: inProgressPath, style: styleForCurrentPath });
+			}
+		},
 
+		startDrawing: (e) => {
+			const { canvasRef } = get();
+			if (!canvasRef?.current) return;
+
+			const canvas = canvasRef.current;
+			const rect = canvas.getBoundingClientRect();
+			const x = e.clientX - rect.left;
+			const y = e.clientY - rect.top;
+
+			set({ drawing: true, currentPath: [[x, y]] });
+		},
+
+		draw: (e) => {
+			const { drawing, canvasRef, currentPath, redrawCanvas } = get();
+			if (!drawing || !canvasRef?.current) return;
+
+			const canvas = canvasRef.current;
+			const rect = canvas.getBoundingClientRect();
+			const x = e.clientX - rect.left;
+			const y = e.clientY - rect.top;
+
+			const newCurrentPath: [number, number][] = [
+				...currentPath,
+				[x, y] as [number, number],
+			];
+			set({ currentPath: newCurrentPath });
+			redrawCanvas(newCurrentPath);
+		},
+
+		endDrawing: () => {
+			const { drawing, contextRef, currentPath, currentStyle, activeTool } =
+				get();
+			if (!drawing || !contextRef?.current) return;
+
+			contextRef.current.closePath();
+			if (currentPath.length > 0) {
+				const styleForAction =
+					activeTool === 'eraser'
+						? { ...currentStyle, color: BACKGROUND_COLOR }
+						: currentStyle;
+
+				set((state) => ({
+					drawingActions: [
+						...state.drawingActions,
+						{ path: currentPath, style: styleForAction },
+					],
+				}));
+			}
+			set({ drawing: false, currentPath: [] });
+		},
+
+		changeColor: (color) => {
 			set((state) => ({
-				drawingActions: [
-					...state.drawingActions,
-					{ path: currentPath, style: styleForAction },
-				],
+				currentColor: color,
+				currentStyle: { ...state.currentStyle, color },
 			}));
-		}
-		set({ drawing: false, currentPath: [] });
-	},
+		},
 
-	changeColor: (color) => {
-		set((state) => ({
-			currentColor: color,
-			currentStyle: { ...state.currentStyle, color },
-		}));
-	},
+		changeWidth: (width) => {
+			set((state) => ({
+				brushSize: width,
+				currentStyle: { ...state.currentStyle, size: width },
+			}));
+		},
 
-	changeWidth: (width) => {
-		set((state) => ({
-			brushSize: width,
-			currentStyle: { ...state.currentStyle, size: width },
-		}));
-	},
+		undoDrawing: () => {
+			const { drawingActions, redrawCanvas } = get();
+			if (drawingActions.length > 0) {
+				set({ drawingActions: drawingActions.slice(0, -1) });
+				redrawCanvas();
+			}
+		},
 
-	undoDrawing: () => {
-		const { drawingActions, redrawCanvas } = get();
-		if (drawingActions.length > 0) {
-			set({ drawingActions: drawingActions.slice(0, -1) });
-			redrawCanvas();
-		}
-	},
-
-	clearDrawing: () => {
-		set({ drawingActions: [], currentPath: [] });
-		get().redrawCanvas();
-	},
-}));
+		clearDrawing: () => {
+			set({ drawingActions: [], currentPath: [] });
+			get().redrawCanvas();
+		},
+	};
+});
 
 export default useCanvasStore;
