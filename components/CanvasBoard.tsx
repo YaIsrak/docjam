@@ -1,5 +1,5 @@
 'use client';
-
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { BACKGROUND_COLOR } from '@/lib/constant';
 import useCanvasStore from '@/lib/stores/useCanvasStore';
 import { useEffect, useRef } from 'react';
@@ -7,7 +7,9 @@ import { useEffect, useRef } from 'react';
 const CANVAS_WIDTH = window.innerWidth;
 const CANVAS_HEIGHT = window.innerHeight;
 
-export default function Canvas() {
+export default function CanvasBoard() {
+	useKeyboardShortcuts();
+
 	const startDrawing = useCanvasStore((s) => s.startDrawing);
 	const draw = useCanvasStore((s) => s.draw);
 	const endDrawing = useCanvasStore((s) => s.endDrawing);
