@@ -51,7 +51,7 @@ export default function CanvasBoard() {
 	}, [redrawCanvas]);
 
 	return (
-		<div className='cursor-crosshair'>
+		<div className='cursor-none'>
 			<canvas
 				ref={canvasRef}
 				onMouseDown={startDrawing}
