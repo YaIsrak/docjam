@@ -1,5 +1,7 @@
 'use client';
+
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import useMultiCursor from '@/hooks/useMultiCursor';
 import { BACKGROUND_COLOR } from '@/lib/constant';
 import useCanvasStore from '@/stores/useCanvasStore';
 import { useEffect, useRef } from 'react';
@@ -19,6 +21,14 @@ export default function CanvasBoard() {
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const contextRef = useRef<CanvasRenderingContext2D | null>(null);
+
+	const { emitCursorMove } = useMultiCursor();
+
+	const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+		draw(e);
+
+		emitCursorMove(e.clientX, e.clientY);
+	};
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -55,7 +65,7 @@ export default function CanvasBoard() {
 			<canvas
 				ref={canvasRef}
 				onMouseDown={startDrawing}
-				onMouseMove={draw}
+				onMouseMove={handleMouseMove}
 				onMouseUp={endDrawing}
 				onMouseLeave={endDrawing}
 				style={{

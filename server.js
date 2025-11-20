@@ -21,7 +21,19 @@ app.prepare().then(() => {
 	});
 
 	io.on('connection', (socket) => {
-		console.log('User connected:', socket.id);
+		console.log('👤 User connected:', socket.id);
+
+		socket.on('cursor-move', (data) => {
+			socket.broadcast.emit('cursor-update', {
+				id: socket.id,
+				...data,
+			});
+		});
+
+		socket.on('disconnect', () => {
+			console.log('⛔ User disconnected:', socket.id);
+			io.emit('cursor-remove', socket.id);
+		});
 	});
 
 	// FIXED wildcard route
