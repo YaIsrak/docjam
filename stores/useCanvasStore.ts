@@ -1,4 +1,3 @@
-'use client';
 import { BACKGROUND_COLOR } from '@/lib/constant';
 import { create } from 'zustand';
 
@@ -14,6 +13,7 @@ interface CanvasState {
 		size: number;
 	};
 	drawingActions: DrawingAction[];
+	undoneActions: DrawingAction[];
 	currentPath: [number, number][];
 	setCanvasRef: (ref: React.RefObject<HTMLCanvasElement | null>) => void;
 	setContextRef: (
@@ -26,6 +26,7 @@ interface CanvasState {
 	changeColor: (color: string) => void;
 	changeWidth: (width: number) => void;
 	undoDrawing: () => void;
+	redoDrawing: () => void;
 	clearDrawing: () => void;
 	redrawCanvas: (inProgressPath?: [number, number][]) => void;
 }
@@ -33,8 +34,12 @@ interface CanvasState {
 const useCanvasStore = create<CanvasState>((set, get) => {
 	const drawPath = (ctx: CanvasRenderingContext2D, action: DrawingAction) => {
 		ctx.beginPath();
+
+		ctx.lineCap = 'round';
+		ctx.lineJoin = 'round';
 		ctx.strokeStyle = action.style.color;
 		ctx.lineWidth = action.style.size;
+
 		if (action.path.length > 0) {
 			ctx.moveTo(action.path[0][0], action.path[0][1]);
 			for (let i = 1; i < action.path.length; i++) {
@@ -44,18 +49,46 @@ const useCanvasStore = create<CanvasState>((set, get) => {
 		}
 	};
 
+	const getCoordinates = (
+		e:
+			| React.MouseEvent<HTMLCanvasElement>
+			| React.TouchEvent<HTMLCanvasElement>,
+	) => {
+		const { canvasRef } = get();
+		if (!canvasRef?.current) return null;
+
+		const canvas = canvasRef.current;
+		const rect = canvas.getBoundingClientRect();
+
+		let clientX, clientY;
+
+		if ('touches' in e) {
+			if (e.touches.length === 0) return null;
+			clientX = e.touches[0].clientX;
+			clientY = e.touches[0].clientY;
+		} else {
+			clientX = e.clientX;
+			clientY = e.clientY;
+		}
+
+		const x = clientX - rect.left;
+		const y = clientY - rect.top;
+		return [x, y] as [number, number];
+	};
+
 	return {
 		canvasRef: null,
 		contextRef: null,
 		drawing: false,
 		activeTool: 'pencil',
-		currentColor: 'red',
+		currentColor: 'black',
 		brushSize: 5,
 		currentStyle: {
 			color: 'black',
 			size: 3,
 		},
 		drawingActions: [],
+		undoneActions: [],
 		currentPath: [],
 
 		setCanvasRef: (ref) => set({ canvasRef: ref }),
@@ -81,7 +114,7 @@ const useCanvasStore = create<CanvasState>((set, get) => {
 
 			drawingActions.forEach((action) => drawPath(ctx, action));
 
-			if (inProgressPath) {
+			if (inProgressPath && inProgressPath.length > 0) {
 				const styleForCurrentPath =
 					activeTool === 'eraser'
 						? { ...currentStyle, color: BACKGROUND_COLOR }
@@ -91,42 +124,46 @@ const useCanvasStore = create<CanvasState>((set, get) => {
 		},
 
 		startDrawing: (e) => {
-			const { canvasRef } = get();
-			if (!canvasRef?.current) return;
+			const coordinates = getCoordinates(e);
+			if (!coordinates) return;
 
-			const canvas = canvasRef.current;
-			const rect = canvas.getBoundingClientRect();
-			const x = e.clientX - rect.left;
-			const y = e.clientY - rect.top;
-
-			set({ drawing: true, currentPath: [[x, y]] });
+			set({
+				drawing: true,
+				currentPath: [coordinates],
+				undoneActions: [],
+			});
 		},
 
 		draw: (e) => {
-			const { drawing, canvasRef, currentPath, redrawCanvas } = get();
-			if (!drawing || !canvasRef?.current) return;
+			const { drawing, currentPath, redrawCanvas } = get();
+			if (!drawing) return;
 
-			const canvas = canvasRef.current;
-			const rect = canvas.getBoundingClientRect();
-			const x = e.clientX - rect.left;
-			const y = e.clientY - rect.top;
+			const coordinates = getCoordinates(e);
+			if (!coordinates) return;
 
 			const newCurrentPath: [number, number][] = [
 				...currentPath,
-				[x, y] as [number, number],
+				coordinates,
 			];
 			set({ currentPath: newCurrentPath });
 			redrawCanvas(newCurrentPath);
 		},
 
 		endDrawing: () => {
-			const { drawing, contextRef, currentPath, currentStyle, activeTool } =
-				get();
+			const {
+				drawing,
+				contextRef,
+				currentPath,
+				currentStyle,
+				activeTool,
+				redrawCanvas,
+			} = get();
 			if (!drawing || !contextRef?.current) return;
 
 			contextRef.current.closePath();
+
 			if (currentPath.length > 0) {
-				const styleForAction =
+				const styleForAction: DrawingAction['style'] =
 					activeTool === 'eraser'
 						? { ...currentStyle, color: BACKGROUND_COLOR }
 						: currentStyle;
@@ -139,12 +176,19 @@ const useCanvasStore = create<CanvasState>((set, get) => {
 				}));
 			}
 			set({ drawing: false, currentPath: [] });
+			redrawCanvas();
 		},
 
 		changeColor: (color) => {
 			set((state) => ({
 				currentColor: color,
-				currentStyle: { ...state.currentStyle, color },
+				currentStyle: {
+					...state.currentStyle,
+					color:
+						state.activeTool === 'pencil'
+							? color
+							: state.currentStyle.color,
+				},
 			}));
 		},
 
@@ -158,13 +202,31 @@ const useCanvasStore = create<CanvasState>((set, get) => {
 		undoDrawing: () => {
 			const { drawingActions, redrawCanvas } = get();
 			if (drawingActions.length > 0) {
-				set({ drawingActions: drawingActions.slice(0, -1) });
+				const lastAction = drawingActions[drawingActions.length - 1];
+
+				set((state) => ({
+					drawingActions: state.drawingActions.slice(0, -1),
+					undoneActions: [...state.undoneActions, lastAction],
+				}));
+				redrawCanvas();
+			}
+		},
+
+		redoDrawing: () => {
+			const { undoneActions, redrawCanvas } = get();
+			if (undoneActions.length > 0) {
+				const actionToRedo = undoneActions[undoneActions.length - 1];
+
+				set((state) => ({
+					undoneActions: state.undoneActions.slice(0, -1),
+					drawingActions: [...state.drawingActions, actionToRedo],
+				}));
 				redrawCanvas();
 			}
 		},
 
 		clearDrawing: () => {
-			set({ drawingActions: [], currentPath: [] });
+			set({ drawingActions: [], undoneActions: [], currentPath: [] });
 			get().redrawCanvas();
 		},
 	};

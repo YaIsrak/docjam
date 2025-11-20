@@ -27,7 +27,7 @@ const useMultiCursor = () => {
 
 	useEffect(() => {
 		if (!socketRef.current) {
-			const newSocket = io('http://localhost:3000', {
+			const newSocket = io(process.env.NEXT_PUBLIC_BASE_URL, {
 				transports: ['websocket', 'polling'],
 			});
 

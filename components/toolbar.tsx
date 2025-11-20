@@ -35,6 +35,7 @@ export default function Toolbar() {
 		changeWidth,
 		undoDrawing,
 		clearDrawing,
+		redoDrawing,
 	} = useCanvasStore();
 
 	return (
@@ -147,7 +148,9 @@ export default function Toolbar() {
 			</Button>
 			<Button
 				size={'icon'}
-				variant={'outline'}>
+				variant={'outline'}
+				onClick={redoDrawing}
+				disabled={drawingActions.length === 0}>
 				<RedoIcon />
 			</Button>
 			<Button
