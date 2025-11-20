@@ -1,0 +1,29 @@
+import { FileCard } from '@/components/jam/FileCard';
+import Sidebar from '@/components/jam/Sidebar';
+import { files } from '@/lib/dummy';
+
+export default async function JamPage() {
+	return (
+		<div className='flex min-h-screen bg-gray-50'>
+			<Sidebar />
+
+			<main className='flex-1 p-8 overflow-y-auto'>
+				<header className='mb-8 flex justify-between items-center'>
+					<h1 className='text-3xl font-semibold'>Recent Files</h1>
+				</header>
+
+				{/* File Grid List */}
+				<section className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6'>
+					{files.map((file, index) => (
+						<FileCard
+							key={index}
+							name={file.name}
+							lastEdited={file.lastEdited}
+							type={file.type}
+						/>
+					))}
+				</section>
+			</main>
+		</div>
+	);
+}
