@@ -38,6 +38,8 @@ export default function Toolbar() {
 		redoDrawing,
 	} = useCanvasStore();
 
+	console.log('Drawing action', drawingActions[0]);
+
 	return (
 		<div className='border p-2 bg-white rounded-lg flex gap-2'>
 			<Tooltip>

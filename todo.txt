@@ -1,3 +1,6 @@
 disable my socket cursor
 
 test
+
+path:[[271,303], [121, 456]]
+style: {color: "black",  size: 3}

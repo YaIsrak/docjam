@@ -1,7 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getSession } from '@/lib/query/getSession';
-import { FileText, Folder, LayoutGrid, LogOutIcon, Share2 } from 'lucide-react';
+import { Folder, LogOutIcon } from 'lucide-react';
 import SignOutButton from '../auth/sign-out-button';
+import NewCanvasButton from '../buttons/new-canvas-button';
+import NewDocButton from '../buttons/new-doc-button';
+import NewPrototypeButton from '../buttons/new-prototype-button';
 import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
 
@@ -32,27 +35,9 @@ export default async function Sidebar() {
 				<h3 className='text-xs font-semibold uppercase text-gray-500 mb-2'>
 					Create
 				</h3>
-				<Button
-					variant='ghost'
-					size={'sm'}
-					className='w-full justify-start'>
-					<LayoutGrid className='mr-3 h-5 w-5' />
-					New Canvas
-				</Button>
-				<Button
-					variant='ghost'
-					size={'sm'}
-					className='w-full justify-start'>
-					<FileText className='mr-3 h-5 w-5' />
-					New Doc
-				</Button>
-				<Button
-					variant='ghost'
-					size={'sm'}
-					className='w-full justify-start'>
-					<Share2 className='mr-3 h-5 w-5' />
-					New Prototype
-				</Button>
+				<NewCanvasButton userId={user.id} />
+				<NewDocButton />
+				<NewPrototypeButton />
 			</div>
 
 			{/* Navigation (Optional) */}
