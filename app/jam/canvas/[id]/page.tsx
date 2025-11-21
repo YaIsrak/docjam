@@ -23,7 +23,7 @@ export default async function CanvasPage({ params }: PageProps) {
 	return (
 		<div className='relative min-h-screen overflow-hidden'>
 			<ClientCursorWrapper />
-			<CanvasNav />
+			<CanvasNav fileId={id} />
 			<CanvasSide />
 
 			{/* toolbar */}
