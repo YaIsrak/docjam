@@ -1,6 +1,6 @@
 import { FileCard } from '@/components/jam/FileCard';
 import Sidebar from '@/components/jam/Sidebar';
-import { getFilesByUserId } from '@/lib/query/canvas.query';
+import { getFilesByUserId } from '@/lib/query/file.query';
 import { getSession } from '@/lib/query/getSession';
 
 export default async function JamPage() {
