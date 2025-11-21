@@ -28,30 +28,23 @@ const typeIconMap = {
 	canvas: Palette,
 } as const;
 
-interface FileCardProps {
-	name: string;
-	lastEdited: string;
-	previewImage?: string | null;
-	type: 'doc' | 'prototype' | 'canvas';
-}
+export function FileCard({ file }: { file: FileType }) {
+	const Icon = typeIconMap[file.type];
 
-export function FileCard({ name, lastEdited, type }: FileCardProps) {
-	const Icon = typeIconMap[type];
-	const id = 'sdsjdhjshdjshdd';
 	return (
-		<Link href={`/jam/${type}/${id}`}>
+		<Link href={`/jam/${file.type}/${file.id}`}>
 			<Card className='hover:border-primary transition-all duration-200 cursor-pointer shadow-none'>
 				<CardHeader className='p-0 border-b border-gray-300 h-32 relatives flex items-center justify-center'>
 					<Icon className='h-10 w-10 text-primary' />
 				</CardHeader>
 				<CardContent className='pt-3 pb-2 px-4 flex justify-between items-center'>
 					<div className='flex flex-col'>
-						<p className='text-xs text-muted-foreground'>{type}</p>
+						<p className='text-xs text-muted-foreground'>{file.type}</p>
 						<CardTitle className='text-base font-medium truncate'>
-							{name}
+							{file.title}
 						</CardTitle>
 						<CardDescription className='text-xs text-muted-foreground mt-0'>
-							Edited {lastEdited}
+							Edited {new Date(file.updatedAt).toLocaleDateString()}
 						</CardDescription>
 					</div>
 					<DropdownMenu>

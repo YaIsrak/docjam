@@ -33,12 +33,9 @@ const useMultiCursor = () => {
 
 			socketRef.current = newSocket;
 
-			newSocket.on('connect', () => {
-				console.log('Socket connected:', newSocket.id);
-			});
+			newSocket.on('connect', () => {});
 
 			newSocket.on('disconnect', () => {
-				console.log('Socket disconnected:', newSocket.id);
 				setRemoteCursors([]);
 			});
 		}

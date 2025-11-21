@@ -1,6 +1,6 @@
 'use client';
 
-import { createCanvas } from '@/lib/actions/canvas.model';
+import { createCanvas } from '@/lib/actions/canvas.action';
 import { LayoutGrid, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
