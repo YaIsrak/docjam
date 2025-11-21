@@ -9,8 +9,14 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Input } from './ui/input';
 
-export default function CanvasNav({ fileId }: { fileId: string }) {
-	const [name, setName] = useState('Untitled');
+export default function CanvasNav({
+	fileId,
+	title,
+}: {
+	fileId: string;
+	title: string;
+}) {
+	const [name, setName] = useState(title);
 	const debouncedName = useDebounce(name, 500);
 	const [loading, setLoading] = useState(false);
 
@@ -19,7 +25,7 @@ export default function CanvasNav({ fileId }: { fileId: string }) {
 	};
 
 	useEffect(() => {
-		if (debouncedName !== 'Untitled') {
+		if (debouncedName !== title) {
 			const handleTitleChange = async () => {
 				setLoading(true);
 				try {
@@ -42,7 +48,7 @@ export default function CanvasNav({ fileId }: { fileId: string }) {
 		<div className='absolute top-4 left-4'>
 			<div className='bg-white rounded-xl p-2'>
 				<div className='flex items-center justify-center gap-2'>
-					<Link href='/'>
+					<Link href='/jam'>
 						<Image
 							src='/logo.png'
 							alt='logo'
