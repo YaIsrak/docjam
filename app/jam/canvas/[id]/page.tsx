@@ -16,6 +16,8 @@ export default async function CanvasPage({ params }: PageProps) {
 	const { user } = await getSession();
 	const file = await getFileById(id);
 
+	console.log(file.canvas.drawingActions);
+
 	if (!file) redirect('/jam');
 	if (file.user.toString() !== user.id) redirect('/jam');
 	if (file.type !== 'canvas') redirect('/jam');
@@ -33,7 +35,10 @@ export default async function CanvasPage({ params }: PageProps) {
 			<div className='absolute bottom-4 left-1/2 -translate-x-1/2'>
 				<Toolbar />
 			</div>
-			<CanvasBoard />
+			<CanvasBoard
+				intialDrawingActions={file.canvas.drawingActions}
+				canvasId={file.canvas._id}
+			/>
 		</div>
 	);
 }

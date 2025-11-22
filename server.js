@@ -30,6 +30,31 @@ app.prepare().then(() => {
 			});
 		});
 
+		socket.on('drawing', async (data) => {
+			try {
+				const response = await fetch(
+					`http://${hostname}:${port}/api/drawing`,
+					{
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(data),
+					},
+				);
+
+				if (!response.ok) {
+					throw new Error(
+						`API request failed with status ${response.status}`,
+					);
+				}
+
+				socket.broadcast.emit('drawing', data.drawingAction);
+			} catch (error) {
+				console.error('Failed to save drawing:', error);
+			}
+		});
+
 		socket.on('disconnect', () => {
 			console.log('⛔ User disconnected:', socket.id);
 			io.emit('cursor-remove', socket.id);

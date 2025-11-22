@@ -3,14 +3,22 @@
 import useCanvasStore from '@/hooks/useCanvasStore';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import useMultiCursor from '@/hooks/useMultiCursor';
+import useSocket from '@/hooks/useSocket';
 import { BACKGROUND_COLOR } from '@/lib/constant';
 import { useEffect, useRef } from 'react';
 
 const CANVAS_WIDTH = window.innerWidth;
 const CANVAS_HEIGHT = window.innerHeight;
 
-export default function CanvasBoard() {
+export default function CanvasBoard({
+	canvasId,
+	intialDrawingActions,
+}: {
+	canvasId: string;
+	intialDrawingActions?: any[];
+}) {
 	useKeyboardShortcuts();
+	const socket = useSocket('http://localhost:3000');
 
 	const startDrawing = useCanvasStore((s) => s.startDrawing);
 	const draw = useCanvasStore((s) => s.draw);
@@ -18,6 +26,8 @@ export default function CanvasBoard() {
 	const setCanvasRef = useCanvasStore((s) => s.setCanvasRef);
 	const setContextRef = useCanvasStore((s) => s.setContextRef);
 	const redrawCanvas = useCanvasStore((s) => s.redrawCanvas);
+	const drawingActions = useCanvasStore((s) => s.drawingActions);
+	const setDrawingActions = useCanvasStore((s) => s.setDrawingActions);
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const contextRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -29,6 +39,21 @@ export default function CanvasBoard() {
 
 		emitCursorMove(e.clientX, e.clientY);
 	};
+
+	const handleEndDrawing = () => {
+		const drawingAction = endDrawing();
+		if (socket && drawingAction) {
+			socket.emit('drawing', { canvasId, drawingAction });
+		}
+	};
+
+	useEffect(() => {
+		if (socket) {
+			socket.on('drawing', (drawingAction) => {
+				setDrawingActions([...drawingActions, drawingAction]);
+			});
+		}
+	}, [socket, drawingActions, setDrawingActions]);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -66,8 +91,8 @@ export default function CanvasBoard() {
 				ref={canvasRef}
 				onMouseDown={startDrawing}
 				onMouseMove={handleMouseMove}
-				onMouseUp={endDrawing}
-				onMouseLeave={endDrawing}
+				onMouseUp={handleEndDrawing}
+				onMouseLeave={handleEndDrawing}
 				style={{
 					backgroundColor: BACKGROUND_COLOR,
 					display: 'block',

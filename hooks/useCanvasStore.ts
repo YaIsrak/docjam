@@ -19,10 +19,11 @@ interface CanvasState {
 	setContextRef: (
 		ref: React.MutableRefObject<CanvasRenderingContext2D | null>,
 	) => void;
+	setDrawingActions: (actions: DrawingAction[]) => void;
 	setActiveTool: (tool: 'pencil' | 'eraser') => void;
 	startDrawing: (e: React.MouseEvent<HTMLCanvasElement>) => void;
 	draw: (e: React.MouseEvent<HTMLCanvasElement>) => void;
-	endDrawing: () => void;
+	endDrawing: () => DrawingAction | undefined;
 	changeColor: (color: string) => void;
 	changeWidth: (width: number) => void;
 	undoDrawing: () => void;
@@ -93,6 +94,7 @@ const useCanvasStore = create<CanvasState>((set, get) => {
 
 		setCanvasRef: (ref) => set({ canvasRef: ref }),
 		setContextRef: (ref) => set({ contextRef: ref }),
+		setDrawingActions: (actions) => set({ drawingActions: actions }),
 		setActiveTool: (tool) => set({ activeTool: tool }),
 
 		redrawCanvas: (inProgressPath?: [number, number][]) => {
@@ -162,21 +164,21 @@ const useCanvasStore = create<CanvasState>((set, get) => {
 
 			contextRef.current.closePath();
 
+			let newAction: DrawingAction | undefined;
 			if (currentPath.length > 0) {
 				const styleForAction: DrawingAction['style'] =
 					activeTool === 'eraser'
 						? { ...currentStyle, color: BACKGROUND_COLOR }
 						: currentStyle;
 
+				newAction = { path: currentPath, style: styleForAction };
 				set((state) => ({
-					drawingActions: [
-						...state.drawingActions,
-						{ path: currentPath, style: styleForAction },
-					],
+					drawingActions: [...state.drawingActions, newAction!],
 				}));
 			}
 			set({ drawing: false, currentPath: [] });
 			redrawCanvas();
+			return newAction;
 		},
 
 		changeColor: (color) => {
@@ -198,6 +200,7 @@ const useCanvasStore = create<CanvasState>((set, get) => {
 				currentStyle: { ...state.currentStyle, size: width },
 			}));
 		},
+
 
 		undoDrawing: () => {
 			const { drawingActions, redrawCanvas } = get();

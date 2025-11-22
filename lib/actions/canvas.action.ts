@@ -27,3 +27,19 @@ export const createCanvas = async (userId: string) => {
 		throw error;
 	}
 };
+
+export const saveCanvasDrawing = async (
+	canvasId: string,
+	drawingAction: DrawingAction,
+) => {
+	try {
+		dbConnect();
+		const canvas = await Canvas.findById(canvasId);
+		if (!canvas) throw new Error('Canvas not found');
+
+		canvas.drawingActions.push(drawingAction);
+		await canvas.save();
+	} catch (error) {
+		throw error;
+	}
+};
