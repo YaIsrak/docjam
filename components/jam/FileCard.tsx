@@ -24,7 +24,7 @@ import {
 
 const typeIconMap = {
 	doc: FileText,
-	prototype: PencilRuler,
+	diagram: PencilRuler,
 	canvas: Palette,
 } as const;
 

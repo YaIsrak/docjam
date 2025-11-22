@@ -1,7 +1,7 @@
 interface File {
 	name: string;
 	lastEdited: string;
-	type: 'doc' | 'prototype' | 'canvas';
+	type: 'doc' | 'diagram' | 'canvas';
 }
 export const files: File[] = [
 	{
@@ -12,10 +12,10 @@ export const files: File[] = [
 	{
 		name: 'User Research Summary Doc',
 		lastEdited: '5 hours ago',
-		type: 'prototype',
+		type: 'diagram',
 	},
 	{
-		name: 'Mobile App Flow Prototype',
+		name: 'Mobile App Flow diagram',
 		lastEdited: '2 months ago',
 		type: 'canvas',
 	},

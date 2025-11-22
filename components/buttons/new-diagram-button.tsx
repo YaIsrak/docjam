@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '../ui/button';
 
-export default function NewPrototypeButton() {
+export default function NewDiagramButton() {
 	const [loading, setLoading] = useState(true);
 
 	const handleClick = async () => {
@@ -24,7 +24,7 @@ export default function NewPrototypeButton() {
 			onClick={handleClick}
 			className='w-full justify-start'>
 			<Share2 className='mr-3 h-5 w-5' />
-			New Prototype
+			New Diagram
 			{loading && <Loader2 className='mr-3 h-5 w-5 animate-spin' />}
 		</Button>
 	);

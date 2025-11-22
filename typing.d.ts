@@ -6,7 +6,7 @@ interface DrawingAction {
 interface FileType {
 	id: string;
 	title: string;
-	type: 'canvas' | 'doc' | 'prototype';
+	type: 'canvas' | 'doc' | 'diagram';
 	user: string;
 	isPublished: boolean;
 	canvas: string;

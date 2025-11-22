@@ -9,7 +9,7 @@ const fileSchema = new Schema(
 		},
 		type: {
 			type: String,
-			enum: ['doc', 'prototype', 'canvas'],
+			enum: ['doc', 'diagram', 'canvas'],
 			default: 'canvas',
 		},
 		user: {
