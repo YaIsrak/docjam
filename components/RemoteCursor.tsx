@@ -4,6 +4,7 @@ interface RemoteCursorProps {
 	x: number;
 	y: number;
 	id: string;
+	user: UserType;
 }
 
 const getColorForId = (id: string) => {
@@ -15,7 +16,7 @@ const getColorForId = (id: string) => {
 	return color;
 };
 
-export default function RemoteCursor({ x, y, id }: RemoteCursorProps) {
+export default function RemoteCursor({ x, y, id, user }: RemoteCursorProps) {
 	const color = getColorForId(id);
 
 	return (
@@ -28,7 +29,7 @@ export default function RemoteCursor({ x, y, id }: RemoteCursorProps) {
 			<div
 				className='absolute top-5 left-0 px-2 py-1 rounded-br-lg rounded-lg text-xs font-semibold text-white shadow-md'
 				style={{ backgroundColor: color }}>
-				User {id.substring(0, 4)}
+				{user.name || 'Anonymous'}
 			</div>
 		</div>
 	);

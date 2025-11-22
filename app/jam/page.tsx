@@ -7,8 +7,6 @@ export default async function JamPage() {
 	const { user } = await getSession();
 	const files: FileType[] | undefined = await getFilesByUserId(user.id);
 
-	// console.log(files[0]);
-
 	return (
 		<div className='flex min-h-screen bg-gray-50'>
 			<Sidebar />

@@ -13,23 +13,24 @@ interface PageProps {
 
 export default async function CanvasPage({ params }: PageProps) {
 	const { id } = await params;
-	const { user } = await getSession();
+	const { user }: { user: UserType } = await getSession();
 	const file = await getFileById(id);
 
-	console.log(file.canvas.drawingActions);
-
 	if (!file) redirect('/jam');
-	if (file.user.toString() !== user.id) redirect('/jam');
+
 	if (file.type !== 'canvas') redirect('/jam');
 
 	return (
 		<div className='relative min-h-screen overflow-hidden'>
-			<ClientCursorWrapper />
+			<ClientCursorWrapper user={user} />
 			<CanvasNav
 				fileId={id}
 				title={file.title}
 			/>
-			<CanvasSide />
+			<CanvasSide
+				user={user}
+				canvasId={file.canvas._id}
+			/>
 
 			{/* toolbar */}
 			<div className='absolute bottom-4 left-1/2 -translate-x-1/2'>

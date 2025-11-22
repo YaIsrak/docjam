@@ -5,24 +5,7 @@ import RemoteCursor from '@/components/RemoteCursor';
 import useMultiCursor from '@/hooks/useMultiCursor';
 import { MousePointer2 } from 'lucide-react';
 
-export function MultiCursorRenderer() {
-	const { remoteCursors } = useMultiCursor();
-
-	return (
-		<>
-			{remoteCursors.map((cursor) => (
-				<RemoteCursor
-					key={cursor.id}
-					id={cursor.id}
-					x={cursor.x}
-					y={cursor.y}
-				/>
-			))}
-		</>
-	);
-}
-
-export function ClientCursorWrapper() {
+export function ClientCursorWrapper({ user }: { user: UserType }) {
 	const { remoteCursors } = useMultiCursor();
 
 	return (
@@ -37,6 +20,7 @@ export function ClientCursorWrapper() {
 					id={cursor.id}
 					x={cursor.x}
 					y={cursor.y}
+					user={user}
 				/>
 			))}
 		</CursorProvider>

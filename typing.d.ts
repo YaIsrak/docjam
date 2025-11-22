@@ -22,6 +22,16 @@ interface CanvasType {
 	updatedAt: string;
 }
 
+interface UserType {
+	id: string;
+	createdAt: Date;
+	updatedAt: Date;
+	email: string;
+	emailVerified: boolean;
+	name: string;
+	image?: string | null | undefined;
+}
+
 // {
 //   id: '691ff5a582ac45a2637871cb',
 //   title: 'Untitled',

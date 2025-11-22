@@ -21,6 +21,7 @@ app.prepare().then(() => {
 	});
 
 	io.on('connection', (socket) => {
+		// eslint-disable-next-line no-console
 		console.log('👤 User connected:', socket.id);
 
 		socket.on('cursor-move', (data) => {
@@ -51,11 +52,13 @@ app.prepare().then(() => {
 
 				socket.broadcast.emit('drawing', data.drawingAction);
 			} catch (error) {
+				// eslint-disable-next-line no-console
 				console.error('Failed to save drawing:', error);
 			}
 		});
 
 		socket.on('disconnect', () => {
+			// eslint-disable-next-line no-console
 			console.log('⛔ User disconnected:', socket.id);
 			io.emit('cursor-remove', socket.id);
 		});
@@ -67,6 +70,7 @@ app.prepare().then(() => {
 	});
 
 	httpServer.listen(port, () => {
+		// eslint-disable-next-line no-console
 		console.log(`Ready at http://${hostname}:${port}`);
 	});
 });

@@ -43,7 +43,7 @@ const useMultiCursor = () => {
 		const socket = socketRef.current!;
 
 		const handleCursorUpdate = (cursorData: RemoteCursor) => {
-			if (cursorData.id === socket.id) return;
+			if (!socket.id || cursorData.id === socket.id) return;
 
 			setRemoteCursors((prevCursors) => {
 				const existingIndex = prevCursors.findIndex(

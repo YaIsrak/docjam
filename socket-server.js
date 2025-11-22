@@ -8,6 +8,7 @@ const initSocketServer = (server) => {
 	});
 
 	io.on('connection', (socket) => {
+		// eslint-disable-next-line no-console
 		console.log('A user connected');
 
 		socket.on('drawing', (data) => {
@@ -15,6 +16,7 @@ const initSocketServer = (server) => {
 		});
 
 		socket.on('disconnect', () => {
+			// eslint-disable-next-line no-console
 			console.log('User disconnected');
 		});
 	});
