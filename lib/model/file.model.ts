@@ -1,4 +1,5 @@
 import { model, models, Schema } from 'mongoose';
+import './canvas.model';
 
 const fileSchema = new Schema(
 	{

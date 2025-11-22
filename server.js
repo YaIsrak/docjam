@@ -36,7 +36,6 @@ app.prepare().then(() => {
 		});
 	});
 
-	// FIXED wildcard route
 	server.use((req, res) => {
 		const parsedUrl = parse(req.url, true);
 		handle(req, res, parsedUrl);
