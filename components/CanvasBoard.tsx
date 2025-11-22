@@ -26,8 +26,8 @@ export default function CanvasBoard({
 	const setCanvasRef = useCanvasStore((s) => s.setCanvasRef);
 	const setContextRef = useCanvasStore((s) => s.setContextRef);
 	const redrawCanvas = useCanvasStore((s) => s.redrawCanvas);
-	const drawingActions = useCanvasStore((s) => s.drawingActions);
 	const setDrawingActions = useCanvasStore((s) => s.setDrawingActions);
+	const addDrawingAction = useCanvasStore((s) => s.addDrawingAction);
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const contextRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -48,12 +48,23 @@ export default function CanvasBoard({
 	};
 
 	useEffect(() => {
-		if (socket) {
-			socket.on('drawing', (drawingAction) => {
-				setDrawingActions([...drawingActions, drawingAction]);
-			});
+		if (intialDrawingActions) {
+			setDrawingActions(intialDrawingActions);
 		}
-	}, [socket, drawingActions, setDrawingActions]);
+	}, [intialDrawingActions, setDrawingActions]);
+
+	useEffect(() => {
+		if (socket) {
+			const handleDrawing = (drawingAction: any) => {
+				addDrawingAction(drawingAction);
+			};
+			socket.on('drawing', handleDrawing);
+
+			return () => {
+				socket.off('drawing', handleDrawing);
+			};
+		}
+	}, [socket, addDrawingAction]);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;

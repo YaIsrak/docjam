@@ -20,6 +20,7 @@ interface CanvasState {
 		ref: React.MutableRefObject<CanvasRenderingContext2D | null>,
 	) => void;
 	setDrawingActions: (actions: DrawingAction[]) => void;
+	addDrawingAction: (action: DrawingAction) => void;
 	setActiveTool: (tool: 'pencil' | 'eraser') => void;
 	startDrawing: (e: React.MouseEvent<HTMLCanvasElement>) => void;
 	draw: (e: React.MouseEvent<HTMLCanvasElement>) => void;
@@ -95,6 +96,8 @@ const useCanvasStore = create<CanvasState>((set, get) => {
 		setCanvasRef: (ref) => set({ canvasRef: ref }),
 		setContextRef: (ref) => set({ contextRef: ref }),
 		setDrawingActions: (actions) => set({ drawingActions: actions }),
+		addDrawingAction: (action) =>
+			set((state) => ({ drawingActions: [...state.drawingActions, action] })),
 		setActiveTool: (tool) => set({ activeTool: tool }),
 
 		redrawCanvas: (inProgressPath?: [number, number][]) => {
