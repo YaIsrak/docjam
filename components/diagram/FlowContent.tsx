@@ -3,7 +3,9 @@
 import {
 	Background,
 	Controls,
+	Edge,
 	MiniMap,
+	Node,
 	Panel,
 	ReactFlow,
 	addEdge,
@@ -15,15 +17,33 @@ import '@xyflow/react/dist/style.css';
 import { DeleteIcon, Plus } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { Button } from '../ui/button';
+import CustomNode from './CustomNode';
 import DeleteEdge from './DeleteEdge';
 
-const initialNodes = [
-	{ id: 'n1', position: { x: 0, y: 0 }, data: { label: 'Node 1' } },
-	{ id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Node 2' } },
+const initialNodes: Node[] = [
+	{
+		id: 'n1',
+		type: 'customNode',
+		position: { x: 0, y: 0 },
+		data: { label: 'Node 1' },
+	},
+	{
+		id: 'n2',
+		type: 'customNode',
+		position: { x: -200, y: 200 },
+		data: { label: 'Node 2' },
+	},
+	{
+		id: 'n3',
+		type: 'customNode',
+		position: { x: 200, y: 200 },
+		data: { label: 'Node 3' },
+	},
 ];
 
-const initialEdges = [
+const initialEdges: Edge[] = [
 	{ id: 'n1-n2', source: 'n1', target: 'n2', type: 'deleteEdge' },
+	{ id: 'n1-n3', source: 'n1', target: 'n3', type: 'deleteEdge' },
 ];
 
 export default function FlowContent() {
@@ -52,6 +72,7 @@ export default function FlowContent() {
 			id,
 			position: { x: Math.random() * 200, y: Math.random() * 200 },
 			data: { label: `Node ${id.slice(0, 4)}` },
+			type: 'customNode',
 		};
 		setNodes((nds) => [...nds, newNode]);
 	};
@@ -65,6 +86,15 @@ export default function FlowContent() {
 		),
 	};
 
+	const nodeTypes = {
+		customNode: (props: any) => (
+			<CustomNode
+				{...props}
+				setNodes={setNodes}
+			/>
+		),
+	};
+
 	return (
 		<ReactFlow
 			nodes={nodes}
@@ -73,6 +103,7 @@ export default function FlowContent() {
 			onEdgesChange={onEdgesChange}
 			onConnect={onConnect}
 			edgeTypes={edgeTypes}
+			nodeTypes={nodeTypes}
 			fitView>
 			<Background />
 			<Controls />

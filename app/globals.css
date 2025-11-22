@@ -123,6 +123,9 @@
 
 @layer components {
 	.react-flow__node {
-		@apply border! rounded-md!;
+		@apply border rounded-md border-transparent;
+	}
+	.react-flow__node.selected {
+		@apply border-primary!;
 	}
 }
