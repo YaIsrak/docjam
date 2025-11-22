@@ -20,6 +20,7 @@ export async function POST(request: Request) {
 			{ status: 200 },
 		);
 	} catch (error) {
+		// eslint-disable-next-line no-console
 		console.error('API Error saving drawing:', error);
 		return NextResponse.json(
 			{ message: 'Failed to save drawing' },

@@ -11,6 +11,7 @@ export async function dbConnect() {
 		const connect = await mongoose.connect(MONGODB_URI);
 		return connect;
 	} catch (error) {
+		// eslint-disable-next-line no-console
 		console.error('🔴 Error connecting to MongoDB:', error);
 	}
 }

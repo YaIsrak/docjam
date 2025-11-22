@@ -1,22 +1,21 @@
-
 import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 const useSocket = (serverUrl: string) => {
-  const [socket, setSocket] = useState<Socket | null>(null);
+	const [socket, setSocket] = useState<Socket | null>(null);
 
-  useEffect(() => {
-    const socketIo = io(serverUrl);
+	useEffect(() => {
+		const socketIo = io(serverUrl);
+		//// eslint-disable-next-line react-hooks/exhaustive-deps
+		setSocket(socketIo);
 
-    setSocket(socketIo);
+		function cleanup() {
+			socketIo.disconnect();
+		}
+		return cleanup;
+	}, [serverUrl]);
 
-    function cleanup() {
-      socketIo.disconnect();
-    }
-    return cleanup;
-  }, [serverUrl]);
-
-  return socket;
+	return socket;
 };
 
 export default useSocket;
