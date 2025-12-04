@@ -1,16 +1,23 @@
 'use client';
+import { createDiagram } from '@/lib/actions/diagram.action';
 import { Loader2, Share2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '../ui/button';
 
-export default function NewDiagramButton() {
-	const [loading, setLoading] = useState(true);
+export default function NewDiagramButton({ userId }: { userId: string }) {
+	const [loading, setLoading] = useState(false);
+	const router = useRouter();
 
 	const handleClick = async () => {
+		setLoading(true);
 		try {
+			const diagram = await createDiagram(userId);
+
+			router.push(`/jam/diagram/${diagram.id}`);
 		} catch (error) {
-			toast.error('Failed to create canvas', {
+			toast.error('Failed to create diagram', {
 				description: (error as Error).message,
 			});
 		}

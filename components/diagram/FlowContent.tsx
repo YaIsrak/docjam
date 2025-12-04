@@ -47,8 +47,8 @@ const initialEdges: Edge[] = [
 ];
 
 export default function FlowContent() {
-	const [nodes, setNodes] = useState(initialNodes);
-	const [edges, setEdges] = useState(initialEdges);
+	const [nodes, setNodes] = useState<Node[]>(initialNodes);
+	const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
 	const onNodesChange = useCallback(
 		(changes: any) => setNodes((ns) => applyNodeChanges(changes, ns)),

@@ -37,7 +37,7 @@ export default async function Sidebar() {
 				</h3>
 				<NewCanvasButton userId={user.id} />
 				<NewDocButton />
-				<NewDiagramButton />
+				<NewDiagramButton userId={user.id} />
 			</div>
 
 			{/* Navigation (Optional) */}
