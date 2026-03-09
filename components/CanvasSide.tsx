@@ -16,6 +16,7 @@ export default function CanvasSide({
 	canvasId: string;
 }) {
 	const url = `${process.env.NEXT_PUBLIC_BASE_URL}/jam/canvas/${canvasId}`;
+
 	return (
 		<div className='absolute top-4 right-4'>
 			<div className='bg-white rounded-xl p-2'>

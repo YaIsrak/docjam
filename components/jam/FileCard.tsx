@@ -11,7 +11,6 @@ import {
 	MoreVertical,
 	Palette,
 	PencilRuler,
-	Trash,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '../ui/button';
@@ -21,6 +20,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
+import FileDeleteButton from './FileDeleteButton';
 
 const typeIconMap = {
 	doc: FileText,
@@ -61,10 +61,7 @@ export function FileCard({ file }: { file: FileType }) {
 								<EditIcon className='h-4 w-4 mr-2' />
 								Edit
 							</DropdownMenuItem>
-							<DropdownMenuItem className='text-destructive'>
-								<Trash className='h-4 w-4 mr-2 text-destructive' />
-								Delete
-							</DropdownMenuItem>
+							<FileDeleteButton fileId={file.id} />
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</CardContent>

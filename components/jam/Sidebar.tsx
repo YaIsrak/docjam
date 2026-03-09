@@ -3,8 +3,6 @@ import { getSession } from '@/lib/query/getSession';
 import { Folder, LogOutIcon } from 'lucide-react';
 import SignOutButton from '../auth/sign-out-button';
 import NewCanvasButton from '../buttons/new-canvas-button';
-import NewDiagramButton from '../buttons/new-diagram-button';
-import NewDocButton from '../buttons/new-doc-button';
 import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
 
@@ -36,8 +34,6 @@ export default async function Sidebar() {
 					Create
 				</h3>
 				<NewCanvasButton userId={user.id} />
-				<NewDocButton />
-				<NewDiagramButton userId={user.id} />
 			</div>
 
 			{/* Navigation (Optional) */}

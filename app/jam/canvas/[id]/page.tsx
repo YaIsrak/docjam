@@ -29,7 +29,7 @@ export default async function CanvasPage({ params }: PageProps) {
 			/>
 			<CanvasSide
 				user={user}
-				canvasId={file.canvas._id}
+				canvasId={id}
 			/>
 
 			{/* toolbar */}
