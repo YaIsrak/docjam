@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { signOut, useSession } from '@/lib/auth-client';
 import { LayoutDashboard, Loader2, LogOut, User } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export function Navbar() {
@@ -24,8 +25,14 @@ export function Navbar() {
 					<Link
 						href='/'
 						className='flex items-center space-x-2'>
+						<Image
+							src='/logo.png'
+							alt='docjam'
+							width={30}
+							height={30}
+						/>
 						<span className='text-2xl font-bold tracking-tight text-primary'>
-							docjam
+							Docjam
 						</span>
 					</Link>
 					<div className='hidden md:flex gap-6 text-sm font-medium text-muted-foreground'>
